@@ -1,0 +1,73 @@
+# /src/main/resources/application.yml
+# spring 配置
+spring:
+  application:
+    name: kafka
+  # 默认dev环境
+  profiles:
+    active: dev
+
+  # 文件上传
+  servlet:
+    multipart:
+      # 大小限制
+      max-file-size: 10MB
+
+  # kafka 配置
+  kafka:
+    # kafka 服务器地址
+    bootstrap-servers: 120.77.76.40:9093
+    # 配置消费者组
+    consumer:
+      group-id: consumer-group-1
+      # 配置消息的序列化方式
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      bootstrap-servers: 120.77.76.40:9093
+      properties:
+        sasl.mechanism: PLAIN
+        security.protocol: SASL_PLAINTEXT
+        sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="user" password="ZAQ1@wsx";
+      enable-auto-commit: false
+      auto-offset-reset: latest
+      max-poll-records: 500
+
+    # 配置生产者
+    producer:
+      # 配置消息的序列化方式
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      bootstrap-servers: 120.77.76.40:9093
+      properties:
+        sasl.mechanism: PLAIN
+        security.protocol: SASL_PLAINTEXT
+        sasl.jaas.config: org.apache.kafka.common.security.plain.PlainLoginModule required username="user" password="ZAQ1@wsx";
+      retries: 3
+      batch-size: 16384
+      buffer-memory: 33554432
+      acks: 1
+    listener:
+      ack-mode: MANUAL_IMMEDIATE
+      type: batch
+
+  # influxdb 配置
+  influx:
+    url: http://120.77.76.40:8086
+    token: BXGOuKMuT5aCqzXRxok9Qw3Uck0TxJUwcqA4RF_SSyrjlaxpqEQiP-KCusQNC1LOVqgIobtEdCQJzB0WSWk4wA==
+    org: PIM
+    bucket: myBucket
+
+# 服务器配置
+server:
+  address: 0.0.0.0
+  port: 8000
+  servlet:
+    context-path: /api
+    # cookie 30 天过期
+    session:
+      cookie:
+        max-age: 2592000
+
+
+
+

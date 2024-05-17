@@ -24,10 +24,10 @@ jobs:
 
       # 镜像名称 在当前目录
       - name: Build Docker image
-        run: docker build -t my-springboot-app .
+        run: docker build -t pim-server .
         
       - name: Save Docker image
-        run: docker save my-springboot-app > my-springboot-app.tar
+        run: docker save pim-server > pim-server.tar
 
       - name: Copy Docker image to server
         uses: appleboy/scp-action@master
@@ -36,7 +36,7 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          source: "my-springboot-app.tar"
+          source: "pim-server.tar"
           target: "./temp"
 
       - name: Load Docker image on server
@@ -46,8 +46,26 @@ jobs:
           username: ${{ secrets.SSH_USERNAME }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           port: 22
-          script: docker load < ./temp/my-springboot-app.tar
-
+          script: docker load < ./temp/pim-server.tar
+          
+      - name: Run Docker container
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USERNAME }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          script: |
+            # 确保宿主机的日志目录存在
+            mkdir -p ./logs
+            docker stop pim-server-container || true
+            docker rm pim-server-container || true
+            
+            # 运行新的容器实例，并将容器内的/app/logs目录映射到宿主机的./logs目录
+            docker run -d --name pim-server-container \
+              -p 8080:8080 \
+              -v ./logs:/app/logs \
+              pim-server
         
           
     

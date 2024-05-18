@@ -24,6 +24,7 @@ public class TestController {
         return "test";
     }
 
+
     @Autowired
     private KafkaTemplate<Object, Object> template;
 

@@ -4,6 +4,5 @@ FROM maven:3.8.4-openjdk-17-slim AS build
 WORKDIR /app
 # jar 文件
 COPY target/kafka-0.0.1-SNAPSHOT.jar /app/kafka.jar
-EXPOSE 8000
 # 运行
 CMD ["java", "-jar", "/app/kafka.jar"]
